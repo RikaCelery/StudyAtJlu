@@ -48,9 +48,8 @@ val client = HttpClient(OkHttp) {
 
 fun main(args: Array<String>) = runBlocking<Unit> {
     val baseFolder = File("E:\\课程资料\\学期\\2022-2")
-//    val query = "teachClassId" to "xxxxxxx"//算法
-//    val query = "teachClassId" to "xxxxxxx"//操作系统
-//    val query = "teachClassId" to "xxxxxxx"//习概论
-    val query = "termId" to "xxxxxxx"
-    download(baseFolder,query,"先登录，然后拿cookie")
+    val query = "teachClassId" to "xxxxxxx"
+//    val query = "termId" to "xxxxxxx"
+    val cookie = "先登录，然后拿cookie"
+    download(baseFolder,query,cookie)
 }

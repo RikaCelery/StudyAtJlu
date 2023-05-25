@@ -12,9 +12,9 @@ import utils.String
 import utils.StringOrNull
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.io.path.Path
+import kotlin.io.path.pathString
 
-
-private const val QUREY_VIDEO_INFO = "https://ilearnres.jlu.edu.cn/resource-center/videoclass/videoClassInfo"
 
 suspend fun download(baseFolder:File,query: Pair<String,String>,cookie:String) {
     val body = client.get(QUERY_LIVE_AND_RECORD) {
@@ -35,11 +35,11 @@ suspend fun download(baseFolder:File,query: Pair<String,String>,cookie:String) {
     }.getOrThrow()
     for (res in all) {
         val info = runCatching {
-            client.get(QUREY_VIDEO_INFO)
+            client.get(QUERY_VIDEO_INFO)
                 .body<JsonObject>().Object("data")
         }.onFailure {
             println(
-                client.get(QUREY_VIDEO_INFO) {
+                client.get(QUERY_VIDEO_INFO) {
                     parameter("resourceId", res.first)
                 }
                     .body<String>()
@@ -102,6 +102,8 @@ suspend fun download(baseFolder:File,query: Pair<String,String>,cookie:String) {
     client.close()
 }
 
+
+
 private suspend fun receiveStream(
     httpResponse: HttpResponse,
     folderName: String,
@@ -110,12 +112,12 @@ private suspend fun receiveStream(
     fs: FileOutputStream,
 ) {
     val channel = httpResponse.bodyAsChannel()
-    println("downloading $folderName/$subFolderName/$tmpFileName")
+    println("downloading ${Path(folderName,subFolderName,tmpFileName).normalize().pathString}")
     val contentLength = httpResponse.contentLength()?.toString() ?: "unknown"
     val start = System.currentTimeMillis()
     withContext(Dispatchers.IO) {
         while (!channel.isClosedForRead) {
-            val packet = channel.readRemaining(1024 * 64)
+            val packet = channel.readRemaining(DOWNLOAD_BUFFER_SIZE)
             print(buildString {
                 append("write: ")
                 if (contentLength.all(Char::isDigit)) {
@@ -129,12 +131,12 @@ private suspend fun receiveStream(
                 append(contentLength)
                 append(' ')
                 val speed = channel.totalBytesRead.times(1f).div(System.currentTimeMillis() - start).times(1000)
-                append("%.2fMB/s".format(speed.div(1024 * 1024)))
+                append("%.2fMB/s".format(speed.div(UNIT_MB)))
                 append('\r')
             })
             fs.writePacket(packet)
         }
     }
     println()
-    println("downloaded $folderName/$subFolderName/$tmpFileName")
+    println("downloaded ${Path(folderName,subFolderName,tmpFileName).normalize().pathString}")
 }
