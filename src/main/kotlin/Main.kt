@@ -52,5 +52,5 @@ fun main(args: Array<String>) = runBlocking<Unit> {
 //    val query = "teachClassId" to "xxxxxxx"//操作系统
 //    val query = "teachClassId" to "xxxxxxx"//习概论
     val query = "termId" to "xxxxxxx"
-    download(baseFolder,query,)
+    download(baseFolder,query,"先登录，然后拿cookie")
 }
