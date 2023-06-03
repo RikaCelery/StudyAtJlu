@@ -29,7 +29,7 @@
 
 ## TODO（画大饼/pr is welcome）
 
-- [ ] GUI客户端 (下辈子再说)
+- [x] GUI客户端 (看这里！！！！)[https://github.com/RikaCelery/StudyAtJLU_Desktop]
 - [ ] 自动获取cookie(Selenium)
 - [ ] 播放器增加速度控制
 - [ ] 更好的播放器界面
